@@ -4,17 +4,8 @@ __pycache__/
 *.class
 .env
 .venv
-venv/
-env/
 
-# Data and Models (Very Important to ignore large files)
-processed_npy_flattened/
-facial_data_npy_full/
-models/
-*.npy
-*.h5
-
-# Project Specific
+# Project Specific (Now allowing datasets)
 output_videos/
 *.mp4
 *.wav
