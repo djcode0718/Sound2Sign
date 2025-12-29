@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.class
+.env
+.venv
+venv/
+env/
+
+# Data and Models (Very Important to ignore large files)
+processed_npy_flattened/
+facial_data_npy_full/
+models/
+*.npy
+*.h5
+
+# Project Specific
+output_videos/
+*.mp4
+*.wav
+live_audio.wav
+temp_web_audio.wav
+
+# IDEs and OS
+.DS_Store
+.vscode/
+.idea/

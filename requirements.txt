@@ -1,0 +1,23 @@
+# Core Logic & UI
+numpy==1.26.4
+opencv-python==4.11.0.86
+mediapipe==0.10.21
+tqdm==4.67.1
+requests==2.32.5
+
+# Audio & Speech Processing
+faster-whisper==1.2.1
+SpeechRecognition==3.14.4
+sounddevice==0.5.3
+
+# Deep Learning Backend
+tensorflow-macos==2.13.0; sys_platform == 'darwin'
+tensorflow==2.13.0; sys_platform != 'darwin'
+
+# Utilities
+PyYAML==6.0.3
+typing_extensions==4.15.0
+
+# Frontend
+streamlit==1.52.2
+streamlit_mic_recorder==0.0.8
