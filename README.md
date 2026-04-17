@@ -1,61 +1,225 @@
-# Sound2Sign: AI-Powered ISL Interpreter 🤟
+# 🤟 Sound2Sign: Data-Efficient Sign Language Generation
 
-Sound2Sign is a comprehensive pipeline that translates English speech or text into **Indian Sign Language (ISL)** animations. It utilizes Large Language Models (LLMs) for linguistic glossing and a custom rendering engine for 3D-style skeletal animations.
+## 📌 Overview
 
-## 🚀 Features
-- **Voice-to-Sign**: Real-time transcription using `Faster-Whisper`.
-- **Linguistic Engine**: Uses `Ollama` (Mistral) to transform English into ISL Gloss (TIME-SUBJECT-OBJECT-VERB) and facial expressions.
-- **Skeletal Synthesis**: Generates smooth animations by interpolating MediaPipe landmarks.
-- **Web Interface**: A clean, interactive UI built with `Streamlit`.
-- **Hybrid Rendering**: Combines pre-recorded sign data with dynamic facial expression synthesis.
+**Sound2Sign** is an AI-powered system that converts **English text or speech into sign language animations**.
 
-## 🛠️ Architecture
-1. **Audio Processor**: Captures voice and transcribes it using OpenAI's Whisper (via `faster-whisper`).
-2. **Translator**: A rule-based LLM engine that outputs JSON containing ISL Gloss and facial cues.
-3. **Data Utility**: Bridges the gap between sign tokens using mathematical interpolation or GRU-based transitions.
-4. **Renderer**: A custom OpenCV-based engine that draws the skeleton, hands, and face mesh in a synchronized 800x800 canvas.
+Unlike traditional deep learning approaches that require large datasets, this project uses a **hybrid, data-efficient pipeline** combining:
 
-## 📂 Project Structure
-- `app.py`: The Streamlit web application.
-- `main.py`: The core CLI pipeline.
-- `translator.py`: Handles interaction with Ollama/Mistral.
-- `renderer.py`: Logic for drawing the body, hands, and face mesh.
-- `data_utils.py`: Manages coordinate bridging and facial data synchronization.
-- `config.py`: Global paths and rendering constants.
+* dataset-driven motion retrieval
+* GRU-based transition modeling
+* cosine interpolation for smoothness
 
-## ⚙️ Installation
+This enables the system to generate **natural, human-like sign transitions using minimal training data**.
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/YOUR_USERNAME/Sound2Sign.git](https://github.com/YOUR_USERNAME/Sound2Sign.git)
-   cd Sound2Sign
-   
-Install Dependencies:
+---
 
-Bash
+## 🎯 Motivation
 
+Most modern approaches to sign language generation rely on large-scale neural networks trained end-to-end. While effective, these methods:
+
+* are highly **data-hungry**
+* require **expensive training**
+* often struggle with **smooth transitions and fine motion details**
+
+This project takes a different approach:
+
+> Instead of learning everything, we reuse real motion data and learn only the **transitions between signs**.
+
+By combining **learned motion dynamics (GRU)** with **mathematical smoothing (cosine interpolation)**, we achieve realistic motion while keeping the system lightweight and efficient.
+
+---
+
+## ⚙️ Features
+
+* 🎤 Voice input (speech-to-text via Faster-Whisper)
+* ⌨️ Text input support
+* 🧠 Gloss generation (rule-based + LLM-assisted)
+* 🤖 GRU-based motion transition generation
+* 🎯 Cosine interpolation for enhanced smoothness
+* 🎞️ Real-time rendering using OpenCV + MediaPipe
+* 🌐 Interactive UI with Streamlit
+* ⏬ Downloadable sign language video output
+
+---
+
+## 🧠 How It Works
+
+### 1. Input Processing
+
+* User provides input via text or microphone
+* Speech is converted to text using **Faster-Whisper**
+
+---
+
+### 2. Gloss Generation
+
+* Input sentence is converted into a **gloss sequence**
+* Uses rule-based linguistic heuristics
+
+```text
+Input: "I am going to school"
+Gloss: "I SCHOOL GO"
+```
+
+---
+
+### 3. Dataset Mapping
+
+* Gloss words are mapped using:
+
+```text
+gloss_mapping_f8.json
+```
+
+* Each word corresponds to dataset video IDs
+* These are converted into preprocessed `.npy` motion sequences
+
+---
+
+### 4. Motion Retrieval
+
+* Motion data is loaded from:
+
+```text
+processed_npy_flattened/
+```
+
+* Each file contains:
+
+```text
+(frames × 258 keypoint features)
+```
+
+---
+
+### 5. Hybrid Transition Generation
+
+To connect two signs smoothly:
+
+#### 🔹 GRU (Learned Dynamics)
+
+* Learns human motion patterns
+* Generates realistic intermediate frames
+
+#### 🔹 Cosine Interpolation (Mathematical Smoothing)
+
+* Ensures smooth transitions
+* Reduces abrupt motion changes
+
+#### 🔹 Final Output
+
+```text
+Final Transition = α × GRU + (1 − α) × Cosine
+```
+
+---
+
+### 6. Rendering
+
+* Keypoints are rendered using:
+
+  * OpenCV
+  * MediaPipe connections
+
+* Final output:
+
+```text
+Sign Language Animation (.mp4)
+```
+
+---
+
+## 🧱 Tech Stack
+
+* **Python 3.11**
+* **TensorFlow 2.19 (Keras 3.x)**
+* **Streamlit**
+* **MediaPipe**
+* **OpenCV**
+* **Faster-Whisper**
+* **NumPy**
+
+---
+
+## 📦 Installation
+
+### 1. Create environment
+
+```bash
+conda create -n s2s_tf python=3.11
+conda activate s2s_tf
+```
+
+### 2. Install dependencies
+
+```bash
 pip install -r requirements.txt
-External Requirements:
+```
 
-Install Ollama and pull the Mistral model:
+---
 
-Bash
+## ▶️ Run the App
 
-ollama pull mistral
-Ensure you have the processed_npy_flattened and facial_data_npy_full datasets in the path specified in config.py.
+```bash
+streamlit run code/app.py
+```
 
-🖥️ Usage
-To run the Web UI:
-Bash
+---
 
-streamlit run app.py
-To run the CLI:
-Bash
+## 📁 Project Structure
 
-python main.py
-🧠 Future Enhancements
-Integration of a GRU (Gated Recurrent Unit) model for more fluid transitions between signs.
+```text
+s2s/
+│
+├── code/
+│   ├── app.py                  # Streamlit UI
+│   ├── gru_utils.py           # GRU transition logic
+│   ├── data_utils.py          # interpolation functions
+│   ├── renderer.py            # frame rendering
+│   ├── translator.py          # gloss generation
+│
+├── models/
+│   └── gru_model.keras        # trained GRU model
+│
+├── processed_npy_flattened/   # motion dataset
+├── facial_data_npy_full/      # facial expressions
+├── gloss_mapping_f8.json      # gloss → dataset mapping
+│
+├── requirements.txt
+└── runtime.txt
+```
 
-Support for a larger vocabulary of ISL signs.
+---
 
-Deployment via Docker for easier scaling.
+## ⚠️ Notes
+
+* This system is **dataset-driven**, not fully generative
+* Gloss generation is heuristic-based and may not match full linguistic grammar
+* Output quality depends on dataset coverage
+
+---
+
+## 🚀 Future Work
+
+The goal is to **enhance realism and flexibility while preserving data efficiency**:
+
+* 🔹 Adaptive blending between GRU and cosine interpolation
+* 🔹 Improved facial expression modeling for better emotional cues
+* 🔹 Smarter gloss generation aligned with dataset vocabulary
+* 🔹 Real-time performance optimization for faster rendering
+* 🔹 Modular support for multiple sign language datasets
+
+> Future improvements will continue to focus on **efficient, hybrid methods** rather than fully data-heavy end-to-end models.
+
+---
+
+## 👨‍💻 Author
+
+Developed as part of an AI/ML project exploring efficient motion generation and multimodal translation.
+
+---
+
+## ⭐ If you like this project
+
+Give it a ⭐ and feel free to contribute!
