@@ -5,7 +5,7 @@ __pycache__/
 .env
 .venv
 
-# Project Specific (Now allowing datasets)
+# Project Specific
 output_videos/
 *.mp4
 *.wav
@@ -16,3 +16,8 @@ temp_web_audio.wav
 .DS_Store
 .vscode/
 .idea/
+
+# Datasets
+processed_npy_flattened/
+facial_data_npy_full/
+*.npy
